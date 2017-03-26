@@ -1,2 +1,2 @@
-# BlastScript
-Use tblastn to find homologs among genomes on cluster
+# orthofind
+Use tblastn to find orthologous genes among yeast genomes on cluster
