@@ -69,3 +69,20 @@ tblastn -query ./ScerATX1.fas -db yHAB127_kazachstania_bovina_160519 -evalue 1.0
 
 # Tabular output
 tblastn -query ./ScerATX1.fas -subject /mnt/bigdata/processed_data/hittinger/fungal_genomes/to_vanderbilt/assemblies_y1000_all/yHAB127_kazachstania_bovina_160519.fas -evalue 1.00e-20 -num_alignments 2 -outfmt '6 sseqid sgi sacc staxids sscinames scomnames sblastnames stitle'
+
+# Iterating through files in assemblies folder to run some confidence
+filename = $(basename "$fullfile")
+
+for genome in /mnt/bigdata/processed_data/hittinger/fungal_genomes/to_vanderbilt/assemblies_y1000_all/*.fas; do
+  fas=$( basename $genome .fas )
+  makeblastdb -dbtype nucl -in /mnt/bigdata/processed_data/hittinger/fungal_genomes/to_vanderbilt/assemblies_y1000_all/${fas}.fas -out ./BlastDBs/${fas}
+  tblastn -query ./ScerATX1.fas -db ${fas} -evalue 1.00e-20 -num_alignments 10 -outfmt 5 > ./BlastOut/${fas}.xml
+done
+
+for genome in /mnt/bigdata/processed_data/hittinger/fungal_genomes/to_vanderbilt/assemblies_y1000_all/*.fas; do
+  fas=$( basename $genome .fas )
+  tblastn -query ../ScerATX1.fas -db ../BlastDBs/${fas} -evalue 1.00e-10 -num_alignments 10 -outfmt 5 -out ./${fas}.xml
+done
+
+# Can move all Blast databases into another folder: the -i flag asks y/n if file exists already
+# mv -i ./*.{nhr,nin,nsq} ./BlastDBs/
